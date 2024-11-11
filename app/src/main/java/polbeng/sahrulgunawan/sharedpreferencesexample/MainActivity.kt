@@ -3,29 +3,33 @@ package polbeng.sahrulgunawan.sharedpreferencesexample
 import android.os.Bundle
 import android.content.Context
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import polbeng.sahrulgunawan.sharedpreferencesexample.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
+    companion object {
+        const val RPL = "TESTFILE"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val pref = getPreferences(Context.MODE_PRIVATE)
+
+        val filename = "$packageName-$RPL"
+        val pref = getSharedPreferences(filename, Context.MODE_PRIVATE)
+
         binding.btnSave.setOnClickListener {
             val editor = pref.edit()
-            editor.putString("firstName",
-                binding.etFirstName.text.toString())
-            editor.putString("lastName",
-                binding.etLastName.text.toString())
+            editor.putString("firstName", binding.etFirstName.text.toString())
+            editor.putString("lastName", binding.etLastName.text.toString())
             editor.apply()
             Toast.makeText(this, "Saved Data!", Toast.LENGTH_LONG).show()
         }
+
         binding.btnLoad.setOnClickListener {
             val firstName = pref.getString("firstName", "")
             val lastName = pref.getString("lastName", "")
@@ -34,7 +38,13 @@ class MainActivity : AppCompatActivity() {
             binding.etLastName.setText(lastName)
             binding.tvOutput.text = output
         }
+
+        binding.btnSecondActivity.setOnClickListener {
+            val intent = Intent(this@MainActivity, SecondActivity::class.java)
+            startActivity(intent)
+        }
     }
+
     override fun onResume() {
         super.onResume()
         binding.etFirstName.setText("")
